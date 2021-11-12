@@ -38,8 +38,9 @@ func New(notify func(b BSPWM)) *BSPWM {
 }
 
 func (b *BSPWM) subscribe() {
+	montiorRegExp := regexp.MustCompile(`[Mm][^L]+`)
+	displayNameRegExp := regexp.MustCompile(`^[Mm][^:]+`)
 	desktopRegExp := regexp.MustCompile(`[oOuUfF][^:]+`)
-	montiorRegExp := regexp.MustCompile(`^WM[^:]+`)
 
 	cmd := exec.Command("bspc", "subscribe", "report")
 	stdout, _ := cmd.StdoutPipe()
@@ -48,25 +49,28 @@ func (b *BSPWM) subscribe() {
 	scanner := bufio.NewScanner(stdout)
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
-		bspcStatus := scanner.Text()
-		monitor := montiorRegExp.FindString(bspcStatus)[2:]
-		desktopMatches := desktopRegExp.FindAllString(bspcStatus, -1)
-
 		var desktops []Desktop
-		for _,bwk := range desktopMatches {
-			name := bwk[1]
-			status := bwk[0]
+		bspcStatus := scanner.Text()
+		monitors := montiorRegExp.FindAllString(bspcStatus, -1)
+		for _,monitor := range monitors {
 
-			desktops = append(desktops, Desktop{
-				int64(name),
-				string(name),
-				true,
-				status == 'O' || status == 'F',
-				status == 'O' || status == 'F',
-				monitor,
-			})
+			desktopMatches := desktopRegExp.FindAllString(monitor, -1)
+			displayName := displayNameRegExp.FindString(monitor)[1:]
+
+			for _,bwk := range desktopMatches {
+				name := bwk[1]
+				status := bwk[0]
+
+				desktops = append(desktops, Desktop{
+					int64(name),
+					string(name),
+					true,
+					status == 'O' || status == 'F',
+					status == 'O' || status == 'F',
+					displayName,
+				})
+			}
 		}
-
 		b.setDesktops(desktops)
 	}
 	cmd.Wait()
