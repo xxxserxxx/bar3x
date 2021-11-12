@@ -63,7 +63,7 @@ func (m *Workspaces) Init() error {
 	}
 	m.Root = root
 	m.display = m.Context().MustString("display")
-	m.update()
+	//m.update()
 
 	go func() {
 		if m.wm == WM_I3 {
