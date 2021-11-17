@@ -38,8 +38,8 @@ func New(notify func(b BSPWM)) *BSPWM {
 }
 
 func (b *BSPWM) subscribe() {
-	montiorRegExp := regexp.MustCompile(`[Mm][^L]+`)
-	displayNameRegExp := regexp.MustCompile(`^[Mm][^:]+`)
+	montiorRegExp := regexp.MustCompile(`(^W|:)[Mm][^L]+`)
+	displayNameRegExp := regexp.MustCompile(`^(W|:)[Mm][^:]+`)
 	desktopRegExp := regexp.MustCompile(`[oOuUfF][^:]+`)
 
 	cmd := exec.Command("bspc", "subscribe", "report")
@@ -55,7 +55,7 @@ func (b *BSPWM) subscribe() {
 		for _,monitor := range monitors {
 
 			desktopMatches := desktopRegExp.FindAllString(monitor, -1)
-			displayName := displayNameRegExp.FindString(monitor)[1:]
+			displayName := displayNameRegExp.FindString(monitor)[2:]
 
 			for _,bwk := range desktopMatches {
 				name := bwk[1]
