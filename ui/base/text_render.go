@@ -83,6 +83,46 @@ func renderText(text string, w, h int, opt textOptions) (image.Image, error) {
 		return nil, err
 	}
 
+	fo := C.cairo_font_options_create()
+	defer C.cairo_font_options_destroy(fo)
+	C.cairo_get_font_options(ctx, fo)
+
+	/*
+	   # cairo_antialias_t codes
+	   ANTIALIAS_DEFAULT = 0
+	   # method
+	   ANTIALIAS_NONE = 1
+	   ANTIALIAS_GRAY = 2
+	   ANTIALIAS_SUBPIXEL = 3
+	   # hints
+	   ANTIALIAS_FAST = 4
+	   ANTIALIAS_GOOD = 5
+	   ANTIALIAS_BEST = 6
+	*/
+	C.cairo_font_options_set_antialias(fo, C.cairo_antialias_t(5))
+
+	/*
+	   # cairo_subpixel_order_t codes
+	   SUBPIXEL_ORDER_DEFAULT = 0
+	   SUBPIXEL_ORDER_RGB = 1
+	   SUBPIXEL_ORDER_BGR = 2
+	   SUBPIXEL_ORDER_VRGB = 3
+	   SUBPIXEL_ORDER_VBGR = 4
+	*/
+	C.cairo_font_options_set_subpixel_order(fo, C.cairo_subpixel_order_t(1))
+
+	/*
+	   # cairo_hint_style_t codes
+	   HINT_STYLE_DEFAULT = 0
+	   HINT_STYLE_NONE = 1
+	   HINT_STYLE_SLIGHT = 2
+	   HINT_STYLE_MEDIUM = 3
+	   HINT_STYLE_FULL = 4
+	*/
+	C.cairo_font_options_set_hint_style(fo, C.cairo_hint_style_t(4))
+
+	C.cairo_set_font_options(ctx, fo)
+
 	C.cairo_set_font_size(ctx, C.double(opt.fontSize))
 	C.cairo_set_source_rgba(ctx,
 		C.double(float64(rgba.R)/255),
