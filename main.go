@@ -53,11 +53,13 @@ func main() {
 		}
 		code := cmd.ProcessState.ExitCode()
 
-		if code > 0 {
-			ntf := notify.NewNotification("bar3x", fmt.Sprintf("bar3x: exited with status %d", cmd.ProcessState.ExitCode()))
-			ntf.Show()
-			time.Sleep(time.Second)
+		if code == 0 {
+			os.Exit(0)
 		}
+
+		ntf := notify.NewNotification("bar3x", fmt.Sprintf("bar3x: exited with status %d", cmd.ProcessState.ExitCode()))
+		ntf.Show()
+		time.Sleep(time.Second)
 	}
 }
 
