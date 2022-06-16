@@ -69,6 +69,9 @@ func NewBar(
 		return nil, fmt.Errorf("x create: %w", err)
 	}
 
+	// Dont show over full screen apps
+	win.Stack(xproto.StackModeBelow)
+
 	// Make this window close gracefully.
 	win.WMGracefulClose(func(w *xwindow.Window) {
 		xevent.Detach(w.X, w.Id)
@@ -228,7 +231,6 @@ func (b *Bar) createRoots() error {
 			b.PaintLeft(b.LeftRoot.Image())
 		})
 
-
 		modules, err := b.mk.Parse(b.LeftRoot, nil, b.ctx.MustString("bar_left"))
 		if err != nil {
 			return fmt.Errorf("config: bar_left: %w", err)
@@ -243,7 +245,6 @@ func (b *Bar) createRoots() error {
 			b.CenterRoot.Paint()
 			b.PaintCenter(b.CenterRoot.Image())
 		})
-
 
 		modules, err := b.mk.Parse(b.CenterRoot, nil, b.ctx.MustString("bar_center"))
 		if err != nil {
