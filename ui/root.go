@@ -94,7 +94,10 @@ func (r *Root) Paint() {
 
 func (r *Root) Image() *image.RGBA {
 	if r.im == nil {
-		return nil
+		w, h := r.Inner.Width(), r.Inner.Height()
+		size := image.Rect(0, 0, w, h)
+		r.ensureImage(size)
+		//return nil
 	}
 	return r.im.SubImage(r.bounds).(*image.RGBA)
 }
